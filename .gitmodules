@@ -1,0 +1,3 @@
+[submodule "opengl"]
+	path = opengl
+	url = git@github.com:OpenGL-Graphics/opengl.git

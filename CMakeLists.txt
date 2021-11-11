@@ -9,14 +9,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Release)
 # set(CMAKE_BUILD_TYPE Debug)
 
-# needed packages
-find_package(glfw3 REQUIRED)
+# submodules
+add_subdirectory(opengl)
 
 # shared library
-file(GLOB SRC
-  "src/*.cpp"
-  "src/glad/glad.c"
-)
+file(GLOB SRC "src/*.cpp")
 add_library(opengl_texture SHARED ${SRC})
-target_include_directories(opengl_texture PRIVATE include)
-target_link_libraries(opengl_texture glfw)
+target_include_directories(opengl_texture PUBLIC include)
+target_link_libraries(opengl_texture opengl)

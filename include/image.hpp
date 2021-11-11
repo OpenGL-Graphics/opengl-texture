@@ -1,8 +1,9 @@
 #ifndef IMAGE_HPP
 #define IMAGE_HPP
 
-#include <glad/glad.h>
 #include <string>
+
+#include "glad/glad.h"
 
 /* Wrapper around image pointer returned by `stbi_load()` */
 struct Image {
