@@ -6,9 +6,9 @@
 template <>
 void Texture2D::from_image() {
   // 2d texture from given image (save width & height for HUD scaling)
-  m_width = m_image.width;
-  m_height = m_image.height;
-  glTexImage2D(GL_TEXTURE_2D, 0, m_image.format, m_width, m_height, 0, m_image.format, GL_UNSIGNED_BYTE, m_image.data);
+  width = m_image.width;
+  height = m_image.height;
+  glTexImage2D(GL_TEXTURE_2D, 0, m_image.format, width, height, 0, m_image.format, GL_UNSIGNED_BYTE, m_image.data);
 }
 
 template <>
@@ -30,20 +30,20 @@ Texture2D::Texture(const Image& image, GLenum index):
 template <>
 int Texture2D::get_width() const {
   // used to scale HUD surface
-  return m_width;
+  return width;
 }
 
 template <>
 int Texture2D::get_height() const {
   // used to scale HUD surface
-  return m_height;
+  return height;
 }
 
 template <>
 void Texture2D::free() {
   // delete image associated & texture
   m_image.free();
-  glDeleteTextures(1, &m_id);
+  glDeleteTextures(1, &id);
 }
 
 /*
@@ -77,7 +77,7 @@ void Texture3D::free() {
     image.free();
   }
 
-  glDeleteTextures(1, &m_id);
+  glDeleteTextures(1, &id);
 }
 
 /*
@@ -85,7 +85,7 @@ void Texture3D::free() {
  */
 template <class T>
 void Texture<T>::generate() {
-  glGenTextures(1, &m_id);
+  glGenTextures(1, &id);
 }
 
 template <class T>
@@ -102,7 +102,7 @@ void Texture<T>::configure() {
 
 template <class T>
 void Texture<T>::bind() {
-  glBindTexture(m_type, m_id);
+  glBindTexture(m_type, id);
 }
 
 template <class T>
@@ -110,7 +110,7 @@ void Texture<T>::unbind() {
   glBindTexture(m_type, 0);
 }
 
-/* Attach texture object m_id to texture unit m_index before `Renderer::draw()` */
+/* Attach texture object id to texture unit m_index before `Renderer::draw()` */
 template <class T>
 void Texture<T>::attach() {
   glActiveTexture(m_index);

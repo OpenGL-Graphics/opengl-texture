@@ -7,8 +7,11 @@
 #include "image.hpp"
 
 template <class T>
-class Texture {
-public:
+struct Texture {
+  GLuint id;
+  int width;
+  int height;
+
   Texture(const T& image=T(), GLenum index=GL_TEXTURE0);
   void free();
   GLenum get_index() const;
@@ -20,11 +23,8 @@ private:
   // 2d or 3d (6-faced) image
   T m_image;
 
-  GLuint m_id;
   GLuint m_type;
   GLenum m_index;
-  int m_width;
-  int m_height;
 
   void generate();
   void configure();
