@@ -18,6 +18,7 @@ struct Texture {
   int get_width() const;
   int get_height() const;
   void attach();
+  void set_image(const T& image=T());
 
 private:
   // 2d or 3d (6-faced) image
@@ -30,7 +31,6 @@ private:
   void configure();
   void bind();
   void unbind();
-  void from_image();
   void from_images();
 };
 
