@@ -1,0 +1,3 @@
+[submodule "opengl-texture"]
+	path = opengl-texture
+	url = git@github.com:OpenGL-Graphics/opengl-texture.git
