@@ -7,13 +7,19 @@
 /**
  * Load image
  * @param p Image path
- * @param desired_channels =1: load image in grayscale mode (heightmap), =0: no preference
+ * @param flip: images (origin at upper-left) need to be flipped horizontally in OpenGL 3D (origin at bottom)
+ * but not in ImGui because of 2D projection matrix used in project <imgui-example>
  */
-Image::Image(const std::string& p, int desired_channels):
+Image::Image(const std::string& p, bool flip):
   path(p)
 {
- // load image using its path (opengl origin at lower-left corner of image)
-  stbi_set_flip_vertically_on_load(true);
+  // opengl origin at lower-left corner of image
+  if (flip) {
+    stbi_set_flip_vertically_on_load(true);
+  }
+
+  // load image using its path
+  int desired_channels = 0;
   data = stbi_load(path.c_str(), &width, &height, &n_channels, desired_channels);
 
   if (data == nullptr) {
