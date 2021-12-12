@@ -3,6 +3,8 @@
 #include "image.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb/stb_image_write.h"
 
 /**
  * Load image
@@ -27,6 +29,11 @@ Image::Image(const std::string& p, bool flip):
   }
 
   set_format_from_n_channels();
+}
+
+/* Save image in jpeg format */
+void Image::save(const std::string& filename) {
+  stbi_write_jpg(filename.c_str(), width, height, n_channels, data, 90);
 }
 
 /* Set image format from # of channels */
