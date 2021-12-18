@@ -5,9 +5,8 @@
 #include <glad/glad.h>
 #include <string>
 
-class Shader {
-public:
-  GLuint m_id;
+struct Shader {
+  GLuint id;
 
   Shader(const std::string& source, GLenum type);
   void free();

@@ -8,8 +8,10 @@
 
 #include "uniforms.hpp"
 
-class Program {
-  public:
+struct Program {
+    GLuint id;
+
+    Program(GLuint id_pgm);
     Program(const std::string& path_vertex, const std::string& path_fragment);
     void set_mat4(const std::string& name, const glm::mat4& mat);
     void set_vec3(const std::string& name, const glm::vec3& vect);
@@ -21,9 +23,6 @@ class Program {
     void free();
     bool has_failed();
     GLuint define_attribute(const std::string& attribute) const;
-
-  private:
-    GLuint m_id;
 };
 
 #endif // PROGRAM_HPP
