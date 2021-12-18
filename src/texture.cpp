@@ -31,6 +31,18 @@ Texture2D::Texture(const Image& image, GLenum index):
   }
 }
 
+/**
+ * Used to construct a texture from its `id` passed to callback in <imgui-example> project
+ * `index` needed in `Program::set_uniforms()`
+ */
+template <>
+Texture2D::Texture(GLuint id_tex, GLenum index):
+  m_type(GL_TEXTURE_2D),
+  m_index(index)
+{
+  // empty as texture has already been defined & configured before callback is called
+}
+
 template <>
 int Texture2D::get_width() const {
   // used to scale HUD surface

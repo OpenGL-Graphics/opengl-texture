@@ -13,6 +13,7 @@ struct Texture {
   int height;
 
   Texture(const T& image=T(), GLenum index=GL_TEXTURE0);
+  Texture(GLuint id_tex, GLenum index=GL_TEXTURE0);
   void free();
   GLenum get_index() const;
   int get_width() const;
