@@ -19,9 +19,10 @@ void Texture2D::set_image(const Image& image) {
 }
 
 template <>
-Texture2D::Texture(const Image& image, GLenum index):
+Texture2D::Texture(const Image& image, GLenum index, Wrapping wrapping):
   m_type(GL_TEXTURE_2D),
-  m_index(index)
+  m_index(index),
+  m_wrapping(wrapping)
 {
   // default constructor needed to init class member TextRenderer::m_glyphs
   if (image.data != NULL) {
@@ -38,7 +39,8 @@ Texture2D::Texture(const Image& image, GLenum index):
 template <>
 Texture2D::Texture(GLuint id_tex, GLenum index):
   m_type(GL_TEXTURE_2D),
-  m_index(index)
+  m_index(index),
+  m_wrapping(Wrapping::BLACK)
 {
   // empty as texture has already been defined & configured before callback is called
 }
@@ -87,10 +89,11 @@ void Texture3D::from_images() {
 }
 
 template <>
-Texture3D::Texture(const std::vector<Image>& image, GLenum index):
+Texture3D::Texture(const std::vector<Image>& image, GLenum index, Wrapping wrapping):
   m_image(image),
   m_type(GL_TEXTURE_CUBE_MAP),
-  m_index(index)
+  m_index(index),
+  m_wrapping(wrapping)
 {
   generate();
   configure();
@@ -114,14 +117,26 @@ template <class T>
 void Texture<T>::configure() {
   bind();
 
-  // repeat texture by default (suitable for small revolver textures)
-  glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // wrap texture around mesh
-  // glTexParameteri(m_type, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  // glTexParameteri(m_type, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  // interpolation used when down/upscaling
   glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // wrapping method
+  GLint wrapping_method;
+  switch (m_wrapping) {
+    case Wrapping::REPEAT:
+      wrapping_method = GL_REPEAT;
+      break;
+    case Wrapping::STRETCH:
+      wrapping_method = GL_CLAMP_TO_EDGE;
+      break;
+    case Wrapping::BLACK:
+      wrapping_method = GL_CLAMP_TO_BORDER;
+      break;
+  }
+
+  glTexParameteri(m_type, GL_TEXTURE_WRAP_S, wrapping_method);
+  glTexParameteri(m_type, GL_TEXTURE_WRAP_T, wrapping_method);
 
   unbind();
 }

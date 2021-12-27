@@ -5,6 +5,7 @@
 
 #include "glad/glad.h"
 #include "image.hpp"
+#include "wrapping.hpp"
 
 template <class T>
 struct Texture {
@@ -12,7 +13,7 @@ struct Texture {
   int width;
   int height;
 
-  Texture(const T& image=T(), GLenum index=GL_TEXTURE0);
+  Texture(const T& image=T(), GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   Texture(GLuint id_tex, GLenum index=GL_TEXTURE0);
   void free();
   GLenum get_index() const;
@@ -27,6 +28,9 @@ private:
 
   GLuint m_type;
   GLenum m_index;
+
+  /* whether texture is repeated, stretched or set to black beyond [0, 1] */
+  Wrapping m_wrapping;
 
   void generate();
   void configure();
