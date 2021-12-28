@@ -87,3 +87,30 @@ void Image::free() const {
     stbi_image_free(data);
   }
 }
+
+/**
+ * Get pixel value at position i_pixel
+ * @returns Vector containing `n_channels` components (monochrome, rgb, or rgba)
+ */
+std::vector<unsigned char> Image::get_pixel_value(unsigned int i_pixel) {
+  switch (n_channels){
+    case 4: // rgba
+      return {
+        data[n_channels*i_pixel],
+        data[n_channels*i_pixel + 1],
+        data[n_channels*i_pixel + 2],
+        data[n_channels*i_pixel + 3],
+      };
+    case 3: // rgb
+      return {
+        data[n_channels*i_pixel],
+        data[n_channels*i_pixel + 1],
+        data[n_channels*i_pixel + 2],
+      };
+  }
+
+  // monochrome
+  return {
+    data[i_pixel],
+  };
+}

@@ -2,6 +2,7 @@
 #define IMAGE_HPP
 
 #include <string>
+#include <vector>
 
 #include "glad/glad.h"
 
@@ -19,6 +20,7 @@ struct Image {
   void save(const std::string& filename);
   void free() const;
 
+  std::vector<unsigned char> get_pixel_value(unsigned int i_pixel);
 private:
   void set_format_from_n_channels();
   void set_n_channels_from_format();
