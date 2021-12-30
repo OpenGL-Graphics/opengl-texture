@@ -24,7 +24,8 @@ Texture2D::Texture(const Image& image, GLenum index, Wrapping wrapping):
   m_index(index),
   m_wrapping(wrapping)
 {
-  // default constructor needed to init class member TextRenderer::m_glyphs
+  // default constructor needed because lvalue in assignment `map[key] = value` (source: models/models.cpp) evals to a reference
+  // https://stackoverflow.com/a/29826440/2228912
   if (image.data != NULL) {
     generate();
     configure();
@@ -62,7 +63,7 @@ int Texture2D::get_height() const {
  * Image not freed just after `glTexImage2D()` to process it in <imgui-example>
  */
 template <>
-void Texture2D::free() {
+void Texture2D::free() const {
   m_image.free();
   glDeleteTextures(1, &id);
 }
@@ -101,7 +102,7 @@ Texture3D::Texture(const std::vector<Image>& image, GLenum index, Wrapping wrapp
 }
 
 template <>
-void Texture3D::free() {
+void Texture3D::free() const {
   glDeleteTextures(1, &id);
 }
 

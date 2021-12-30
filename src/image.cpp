@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 
 #include "image.hpp"
 #define STB_IMAGE_IMPLEMENTATION
@@ -68,7 +69,9 @@ void Image::set_n_channels_from_format() {
 
 /**
  * Used to load glyph bitmap for a font into image (note that `path` is empty in this case, see `free()`) &
- * as default constructor (TextRenderer::m_glyphs contains textures that need to be init)
+ * Default constructor needed because lvalue in assignment `map[key] = value` (source: models/models.cpp) evals to a reference
+ * and Texture's default constructor requires that Image has one too
+ * https://stackoverflow.com/a/29826440/2228912
  * Also used to init processed image in <imgui-example>
  */
 Image::Image(int w, int h, GLenum f, unsigned char* ptr, const std::string& p):
@@ -79,6 +82,19 @@ Image::Image(int w, int h, GLenum f, unsigned char* ptr, const std::string& p):
   path(p)
 {
   set_n_channels_from_format();
+}
+
+/**
+ * Used by `Image::from_2d_array()` (<imgui-paint>)
+ */
+Image::Image(int w, int h, int n, unsigned char* ptr, const std::string& p):
+  width(w),
+  height(h),
+  n_channels(n),
+  data(ptr),
+  path(p)
+{
+  set_format_from_n_channels();
 }
 
 void Image::free() const {
@@ -113,4 +129,44 @@ std::vector<unsigned char> Image::get_pixel_value(unsigned int i_pixel) {
   return {
     data[i_pixel],
   };
+}
+
+/**
+ * Transform 1D image vector data to 2D array
+ * Easier to calculate local average on 2D array (than on 1D array) in <imgui-paint>
+ */
+unsigned char** Image::to_2d_array() const {
+  size_t n_bytes_row = width * n_channels;
+  unsigned char** data_2d = new unsigned char*[height];
+  size_t offset = 0;
+
+  for (size_t i_height = 0; i_height < height; i_height++) {
+    data_2d[i_height] = new unsigned char[n_bytes_row];
+    std::memcpy(data_2d[i_height], data + offset, n_bytes_row);
+    offset += n_bytes_row;
+  }
+
+  return data_2d;
+}
+
+/**
+ * Construct image after transforming 2D array image to a 1D data vector (to save with stb_image)
+ * Needed in <imgui-paint>
+ * @param width/height Passed as arg as `data_2d` is an array of pointers
+ * cannot work out size of image beneath it from # of bytes (= size of pointers not content)
+ */
+Image Image::from_2d_array(unsigned char** data_2d, int width, int height, int n_channels) {
+  size_t n_bytes = width * height * n_channels;
+  size_t n_bytes_row = width * n_channels;
+  unsigned char* data_out = new unsigned char[n_bytes];
+
+  size_t offset = 0;
+  for (size_t i_height = 0; i_height < height; i_height++) {
+    std::memcpy(data_out + offset, data_2d[i_height], n_bytes_row);
+    offset += n_bytes_row;
+  }
+
+  // construct image (path not null so data can be freed later)
+  Image image_out(width, height, n_channels, data_out, "From 2D array");
+  return image_out;
 }
