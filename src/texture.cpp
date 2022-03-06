@@ -2,6 +2,19 @@
 
 /*
  * template specialization for 2d surface textures
+ * Update only subset of image texture
+ * Used in `imgui-example` project so Brush tool is more fluid (no discontinuities between circles)
+ */
+template <>
+void Texture2D::set_subimage(const Image& subimage, const glm::uvec2& size, const glm::uvec2& offset) {
+  // copy image subset to gpu (subimage pointer freed from calling code)
+  bind();
+  glTexSubImage2D(GL_TEXTURE_2D, 0, offset.x, offset.y, size.x, size.y, subimage.format, GL_UNSIGNED_BYTE, subimage.data);
+  unbind();
+}
+
+/*
+ * template specialization for 2d surface textures
  * Set texture image
  * Used to update texture image from loaded path in `imgui-example` project
  */

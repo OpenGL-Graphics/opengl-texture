@@ -2,6 +2,7 @@
 #define TEXTURE_HPP
 
 #include <vector>
+#include <glm/glm.hpp>
 
 #include "glad/glad.h"
 #include "image.hpp"
@@ -21,6 +22,7 @@ struct Texture {
   int get_height() const;
   void attach();
   void set_image(const T& image=T());
+  void set_subimage(const Image& subimage, const glm::uvec2& size, const glm::uvec2& offset);
 
 private:
   // 2d or 3d (6-faced) image
