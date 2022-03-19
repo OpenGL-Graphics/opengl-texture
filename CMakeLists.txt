@@ -9,11 +9,17 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Release)
 # set(CMAKE_BUILD_TYPE Debug)
 
-# submodules
-add_subdirectory(opengl)
-
 # shared library
-file(GLOB SRC "src/*.cpp")
-add_library(opengl_texture SHARED ${SRC})
-target_include_directories(opengl_texture PUBLIC include)
-target_link_libraries(opengl_texture opengl)
+file(GLOB SRC
+  "src/glad/glad.c"
+  "src/texture/*.cpp"
+  "src/shader/*.cpp"
+  "src/framebuffer/*.cpp"
+)
+add_library(opengl_utils SHARED ${SRC})
+target_include_directories(opengl_utils PUBLIC
+  include
+  include/texture
+  include/shader
+  include/framebuffer
+)
