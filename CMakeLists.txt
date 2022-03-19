@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(OpenGL-texture)
+project(OpenGL-utils)
 
 # use C++17 (in case std::fs needed)
 set(CMAKE_CXX_STANDARD 17)

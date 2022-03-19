@@ -1,4 +1,10 @@
-Wrapper library around image textures in OpenGL. This library is meant to be imported as a git submodule in other repos.
+Wrapper OpenGL libraries for:
+- Textures
+- Shaders
+- Framebuffers
+
+This library is meant to be imported as a git submodule in other repos.
+
 Check this [tutorial][submodule-tutorial1] and this [tutorial][submodule-tutorial2] to learn how to work with submodules.
 
 [submodule-tutorial1]: https://gist.github.com/gitaarik/8735255
