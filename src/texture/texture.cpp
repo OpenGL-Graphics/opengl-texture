@@ -31,6 +31,10 @@ void Texture2D::set_image(const Image& image) {
   unbind();
 }
 
+/* Default constructor used by canvas in `imgui-paint` to create the texture that fbo draw on */
+template <>
+Texture2D::Texture() {}
+
 template <>
 Texture2D::Texture(const Image& image, GLenum index, Wrapping wrapping):
   type(GL_TEXTURE_2D),
@@ -39,11 +43,9 @@ Texture2D::Texture(const Image& image, GLenum index, Wrapping wrapping):
 {
   // default constructor needed because lvalue in assignment `map[key] = value` (source: models/models.cpp) evals to a reference
   // https://stackoverflow.com/a/29826440/2228912
-  if (image.data != NULL) {
-    generate();
-    configure();
-    set_image(image);
-  }
+  generate();
+  configure();
+  set_image(image);
 }
 
 /**

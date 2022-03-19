@@ -15,7 +15,8 @@ struct Texture {
   int height;
   GLuint type;
 
-  Texture(const T& image=T(), GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
+  Texture();
+  Texture(const T& image, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   Texture(GLuint id_tex, GLenum index=GL_TEXTURE0);
   void free() const;
   GLenum get_index() const;

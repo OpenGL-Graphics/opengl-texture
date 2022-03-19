@@ -12,14 +12,16 @@ class Framebuffer {
 public:
   Framebuffer();
   void attach_texture(const Texture2D& texture);
+  bool is_complete();
   void free();
+  void bind();
+  void unbind();
+  void clear(const glm::vec4& color);
 
 private:
   GLuint m_id;
 
   void generate();
-  void bind();
-  void unbind();
 };
 
 #endif
