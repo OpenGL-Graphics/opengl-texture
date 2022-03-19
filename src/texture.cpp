@@ -33,7 +33,7 @@ void Texture2D::set_image(const Image& image) {
 
 template <>
 Texture2D::Texture(const Image& image, GLenum index, Wrapping wrapping):
-  m_type(GL_TEXTURE_2D),
+  type(GL_TEXTURE_2D),
   m_index(index),
   m_wrapping(wrapping)
 {
@@ -52,7 +52,7 @@ Texture2D::Texture(const Image& image, GLenum index, Wrapping wrapping):
  */
 template <>
 Texture2D::Texture(GLuint id_tex, GLenum index):
-  m_type(GL_TEXTURE_2D),
+  type(GL_TEXTURE_2D),
   m_index(index),
   m_wrapping(Wrapping::BLACK)
 {
@@ -105,7 +105,7 @@ void Texture3D::from_images() {
 template <>
 Texture3D::Texture(const std::vector<Image>& image, GLenum index, Wrapping wrapping):
   m_image(image),
-  m_type(GL_TEXTURE_CUBE_MAP),
+  type(GL_TEXTURE_CUBE_MAP),
   m_index(index),
   m_wrapping(wrapping)
 {
@@ -132,8 +132,8 @@ void Texture<T>::configure() {
   bind();
 
   // interpolation used when down/upscaling
-  glTexParameteri(m_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(m_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   // wrapping method
   GLint wrapping_method;
@@ -149,20 +149,20 @@ void Texture<T>::configure() {
       break;
   }
 
-  glTexParameteri(m_type, GL_TEXTURE_WRAP_S, wrapping_method);
-  glTexParameteri(m_type, GL_TEXTURE_WRAP_T, wrapping_method);
+  glTexParameteri(type, GL_TEXTURE_WRAP_S, wrapping_method);
+  glTexParameteri(type, GL_TEXTURE_WRAP_T, wrapping_method);
 
   unbind();
 }
 
 template <class T>
 void Texture<T>::bind() {
-  glBindTexture(m_type, id);
+  glBindTexture(type, id);
 }
 
 template <class T>
 void Texture<T>::unbind() {
-  glBindTexture(m_type, 0);
+  glBindTexture(type, 0);
 }
 
 /* Attach texture object id to texture unit m_index before `Renderer::draw()` */

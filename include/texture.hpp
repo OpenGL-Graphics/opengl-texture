@@ -13,6 +13,7 @@ struct Texture {
   GLuint id;
   int width;
   int height;
+  GLuint type;
 
   Texture(const T& image=T(), GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   Texture(GLuint id_tex, GLenum index=GL_TEXTURE0);
@@ -28,7 +29,6 @@ private:
   // 2d or 3d (6-faced) image
   T m_image;
 
-  GLuint m_type;
   GLenum m_index;
 
   /* whether texture is repeated, stretched or set to black beyond [0, 1] */
