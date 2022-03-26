@@ -11,7 +11,11 @@ void Framebuffer::generate() {
 /* Attach 2D texture as a color buffer to bound framebuffer */
 void Framebuffer::attach_texture(const Texture2D& texture) {
   bind();
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.type, texture.id, 0); 
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.type, texture.id, 0);
+  width = texture.width;
+  height = texture.height;
+  n_channels = texture.image.n_channels;
+  m_format = texture.image.format;
   unbind();
 }
 
@@ -39,6 +43,17 @@ void Framebuffer::bind() {
 
 void Framebuffer::unbind() {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+/**
+ * Get pixel value at coords (x, y)
+ * Origin at upper-left corner of the canvas
+ * @return Contiguous rgb/rgba values (space for data allocated on stack/heap by calling code)
+ */
+void Framebuffer::get_pixel_value(int x, int y, unsigned char* data) {
+  bind();
+  glReadPixels(x, y, 1, 1, m_format, GL_UNSIGNED_BYTE, data);
+  unbind();
 }
 
 void Framebuffer::free() {

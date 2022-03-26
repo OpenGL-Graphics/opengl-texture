@@ -8,8 +8,11 @@
  * Wrapper around OpenGL's framebuffer object (FBO)
  * https://learnopengl.com/Advanced-OpenGL/Framebuffers
  */
-class Framebuffer {
-public:
+struct Framebuffer {
+  int width;
+  int height;
+  int n_channels;
+
   Framebuffer();
   void attach_texture(const Texture2D& texture);
   bool is_complete();
@@ -17,9 +20,11 @@ public:
   void bind();
   void unbind();
   void clear(const glm::vec4& color);
+  void get_pixel_value(int x, int y, unsigned char* data);
 
 private:
   GLuint m_id;
+  GLenum m_format;
 
   void generate();
 };

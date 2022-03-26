@@ -94,6 +94,10 @@ bool Program::has_failed() {
   return (id == 0) ? true : false;
 }
 
+/**
+ * Unused as attribute index can be specified explicitly in shader (layout (location = index))
+ * with index = `Attribute.id`
+ */
 GLuint Program::define_attribute(const std::string& attribute) const {
   // declared as const. bcos program passed by const reference in renderer
   return glGetAttribLocation(id, attribute.c_str());
