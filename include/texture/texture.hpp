@@ -15,21 +15,23 @@ struct Texture {
   int height;
   GLuint type;
 
+  // 2d or 3d (6-faced) image
+  T image;
+
   Texture();
-  Texture(const T& image, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
+  Texture(const T& img, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   Texture(GLuint id_tex, GLenum index=GL_TEXTURE0);
   void free() const;
   GLenum get_index() const;
   int get_width() const;
   int get_height() const;
   void attach();
-  void set_image(const T& image=T());
+
+  void set_image(const T& img=T());
   void set_subimage(const Image& subimage, const glm::uvec2& size, const glm::uvec2& offset);
+  void get_image();
 
 private:
-  // 2d or 3d (6-faced) image
-  T m_image;
-
   GLenum m_index;
 
   /* whether texture is repeated, stretched or set to black beyond [0, 1] */

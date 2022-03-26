@@ -1,5 +1,20 @@
 #include "texture.hpp"
 
+/**
+ * template specialization for 2d surface textures
+ * Retrieve image data from opengl texture (gpu -> cpu) & assign it to internal image
+ * Called before saving image the user painted on with nanovg in <imgui-paint>
+ */
+template <>
+void Texture2D::get_image() {
+  unsigned char* data = new unsigned char[width * height * image.n_channels];
+  glGetTexImage(type, 0, image.format, GL_UNSIGNED_BYTE, data);
+
+  // free previous image & assign retrieved one
+  image.free();
+  image.data = data;
+}
+
 /*
  * template specialization for 2d surface textures
  * Update only subset of image texture
@@ -19,15 +34,18 @@ void Texture2D::set_subimage(const Image& subimage, const glm::uvec2& size, cons
  * Used to update texture image from loaded path in `imgui-example` project
  */
 template <>
-void Texture2D::set_image(const Image& image) {
+void Texture2D::set_image(const Image& img) {
+  // free pixel data from previous image
+  image.free();
+
   // 2d texture from given image (save width & height for HUD scaling)
-  m_image = image;
-  width = m_image.width;
-  height = m_image.height;
+  image = img;
+  width = image.width;
+  height = image.height;
 
   // copy image to gpu (image pointer could be freed after `glTexImage2D`)
   bind();
-  glTexImage2D(GL_TEXTURE_2D, 0, m_image.format, width, height, 0, m_image.format, GL_UNSIGNED_BYTE, m_image.data);
+  glTexImage2D(GL_TEXTURE_2D, 0, image.format, width, height, 0, image.format, GL_UNSIGNED_BYTE, image.data);
   unbind();
 }
 
@@ -36,7 +54,7 @@ template <>
 Texture2D::Texture() {}
 
 template <>
-Texture2D::Texture(const Image& image, GLenum index, Wrapping wrapping):
+Texture2D::Texture(const Image& img, GLenum index, Wrapping wrapping):
   type(GL_TEXTURE_2D),
   m_index(index),
   m_wrapping(wrapping)
@@ -45,7 +63,7 @@ Texture2D::Texture(const Image& image, GLenum index, Wrapping wrapping):
   // https://stackoverflow.com/a/29826440/2228912
   generate();
   configure();
-  set_image(image);
+  set_image(img);
 }
 
 /**
@@ -79,7 +97,7 @@ int Texture2D::get_height() const {
  */
 template <>
 void Texture2D::free() const {
-  m_image.free();
+  image.free();
   glDeleteTextures(1, &id);
 }
 
@@ -91,22 +109,22 @@ void Texture3D::from_images() {
   bind();
 
   // 6-sided texture cube using given images
-  for (size_t i_texture = 0; i_texture < m_image.size(); i_texture++) {
-    Image image(m_image[i_texture]);
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i_texture, 0, image.format, image.width, image.height, 0, image.format, GL_UNSIGNED_BYTE, image.data);
+  for (size_t i_texture = 0; i_texture < image.size(); i_texture++) {
+    Image img(image[i_texture]);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i_texture, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, img.data);
   }
 
   unbind();
 
   // free images pointers
-  for (const Image& image : m_image) {
-    image.free();
+  for (const Image& img : image) {
+    img.free();
   }
 }
 
 template <>
-Texture3D::Texture(const std::vector<Image>& image, GLenum index, Wrapping wrapping):
-  m_image(image),
+Texture3D::Texture(const std::vector<Image>& img, GLenum index, Wrapping wrapping):
+  image(img),
   type(GL_TEXTURE_CUBE_MAP),
   m_index(index),
   m_wrapping(wrapping)
