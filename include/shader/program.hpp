@@ -9,20 +9,23 @@
 #include "uniforms.hpp"
 
 struct Program {
-    GLuint id;
+  GLuint id;
 
-    Program(GLuint id_pgm);
-    Program(const std::string& path_vertex, const std::string& path_fragment);
-    void set_mat4(const std::string& name, const glm::mat4& mat);
-    void set_vec3(const std::string& name, const glm::vec3& vect);
-    void set_float(const std::string& name, float value);
-    void set_int(const std::string& name, int value);
-    void set_uniforms(const Uniforms& uniforms);
-    void use();
-    void unuse();
-    void free();
-    bool has_failed();
-    GLuint define_attribute(const std::string& attribute) const;
+  Program(GLuint id_pgm);
+  Program(const std::string& path_vertex, const std::string& path_fragment);
+  void use();
+  void unuse();
+  void free();
+  bool has_failed();
+  GLuint define_attribute(const std::string& attribute) const;
+  void set_uniforms(const Uniforms& uniforms);
+
+private:
+  void set_mat4(const std::string& name, const glm::mat4& mat);
+  void set_vec3(const std::string& name, const glm::vec3& vect);
+  void set_bool(const std::string& name, bool value);
+  void set_int(const std::string& name, int value);
+  void set_float(const std::string& name, float value);
 };
 
 #endif // PROGRAM_HPP
