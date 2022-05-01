@@ -2,7 +2,7 @@
 #define FRAMEBUFFER_HPP
 
 #include "glad/glad.h"
-#include "texture.hpp"
+#include "texture_2d.hpp"
 
 /**
  * Wrapper around OpenGL's framebuffer object (FBO)
