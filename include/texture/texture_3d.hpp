@@ -13,7 +13,7 @@ struct Texture3D : Texture {
   // 3d (6-faced) images
   std::vector<Image> images;
 
-  Texture3D(const std::string& path_image, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
+  Texture3D(const Image& image, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   Texture3D(const std::vector<Image>& img, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   void free() const;
 

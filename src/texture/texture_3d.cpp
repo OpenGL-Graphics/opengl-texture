@@ -12,14 +12,18 @@ void Texture3D::from_images() {
   unbind();
 
   // free images pointers
-  for (const Image& image : images) {
+  for (Image& image : images) {
     image.free();
   }
 }
 
-/* Used to init all faces textures to same image */
-Texture3D::Texture3D(const std::string& path_image, GLenum index, Wrapping wrapping):
-  Texture3D(std::vector<Image>(6, Image(path_image)), index, wrapping)
+/**
+ * Used to init all faces textures to same image
+ * Constructor `std::vector(n, image)` creates copies of image,
+ * i.e. changing `Image::m_needs_free` for one item, won't change it for others
+ */
+Texture3D::Texture3D(const Image& image, GLenum index, Wrapping wrapping):
+  Texture3D({ image, image, image, image, image, image }, index, wrapping)
 {
 }
 

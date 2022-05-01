@@ -54,9 +54,6 @@ void Texture2D::set_subimage(const Image& subimage, const glm::uvec2& size, cons
  * Used to update texture image from loaded path in `imgui-example` project
  */
 void Texture2D::set_image(const Image& img) {
-  // free pixel data from previous image
-  image.free();
-
   // 2d texture from given image (save width & height for HUD scaling)
   image = img;
   width = image.width;
@@ -66,13 +63,14 @@ void Texture2D::set_image(const Image& img) {
   bind();
   glTexImage2D(GL_TEXTURE_2D, 0, image.format, width, height, 0, image.format, GL_UNSIGNED_BYTE, image.data);
   unbind();
+
+  // free image pointer
+  image.free();
 }
 
 /**
- * Delete texture & free associated image
- * Image not freed just after `glTexImage2D()` to process it in <imgui-example>
+ * Delete texture
  */
-void Texture2D::free() const {
-  image.free();
+void Texture2D::free() {
   glDeleteTextures(1, &id);
 }

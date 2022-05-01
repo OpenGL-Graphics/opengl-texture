@@ -4,7 +4,7 @@
 Texture::Texture(GLuint t, GLenum index, Wrapping wrapping):
   type(t),
   m_index(index),
-  m_wrapping(Wrapping::BLACK)
+  m_wrapping(wrapping)
 {
 }
 

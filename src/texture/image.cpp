@@ -2,10 +2,20 @@
 #include <cstring>
 
 #include "image.hpp"
+#include "image_exception.hpp"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
+
+/**
+ * Default constructor needed because lvalue in assignment `map[key] = value` (source: models/models.cpp) evals to a reference
+ * and Texture's default constructor requires that Image has one too
+ * https://stackoverflow.com/a/29826440/2228912
+ */
+Image::Image()
+{}
 
 /**
  * Load image
@@ -14,7 +24,8 @@
  * but not in ImGui because of 2D projection matrix used in project <imgui-example>
  */
 Image::Image(const std::string& p, bool flip):
-  path(p)
+  path(p),
+  m_needs_free(true)
 {
   // opengl origin at lower-left corner of image
   if (flip) {
@@ -22,14 +33,30 @@ Image::Image(const std::string& p, bool flip):
   }
 
   // load image using its path
+  std::cout << "Loading image: " << path << "\n";
   int desired_channels = 0;
   data = stbi_load(path.c_str(), &width, &height, &n_channels, desired_channels);
 
   if (data == nullptr) {
-    std::cout << "Image " << path << " doesn't exist" << std::endl;
+    throw ImageException();
   }
 
-  set_format_from_n_channels();
+  format = get_format_from_n_channels(n_channels);
+}
+
+/**
+ * Used to load glyph bitmap for a font into image
+ * Also used by `Image::from_2d_array()` (<imgui-paint>)
+ */
+Image::Image(int w, int h, int n, unsigned char* ptr, bool needs_free):
+  width(w),
+  height(h),
+  n_channels(n),
+  format(get_format_from_n_channels(n)),
+  data(ptr),
+  path(""),
+  m_needs_free(needs_free)
+{
 }
 
 /* Save image in jpeg format */
@@ -37,70 +64,48 @@ void Image::save(const std::string& filename) {
   stbi_write_jpg(filename.c_str(), width, height, n_channels, data, 90);
 }
 
-/* Set image format from # of channels */
-void Image::set_format_from_n_channels() {
+/* Get image format from # of channels */
+GLenum Image::get_format_from_n_channels(int n) {
+  GLenum f;
   switch (n_channels) {
     case 1:
-      format = GL_RED;
+      f = GL_RED;
       break;
     case 3:
-      format = GL_RGB;
+      f = GL_RGB;
       break;
-    case 4:
-      format = GL_RGBA;
-      break;
+    default:
+      f = GL_RGBA;
   }
+
+  return f;
 }
 
-/* Set # of channels from image format */
-void Image::set_n_channels_from_format() {
-  switch (format) {
+/* Get # of channels from image format */
+int Image::get_n_channels_from_format(GLenum f) {
+  int n;
+
+  switch (f) {
     case GL_RED:
-      n_channels = 1;
+      n = 1;
       break;
     case GL_RGB:
-      n_channels = 3;
+      n = 3;
       break;
-    case GL_RGBA:
-      n_channels = 4;
-      break;
+    default:
+      n = 4;
   }
+
+  return n;
 }
 
-/**
- * Used to load glyph bitmap for a font into image (note that `path` is empty in this case, see `free()`) &
- * Default constructor needed because lvalue in assignment `map[key] = value` (source: models/models.cpp) evals to a reference
- * and Texture's default constructor requires that Image has one too
- * https://stackoverflow.com/a/29826440/2228912
- * Also used to init processed image in <imgui-example>
- */
-Image::Image(int w, int h, GLenum f, unsigned char* ptr, const std::string& p):
-  width(w),
-  height(h),
-  format(f),
-  data(ptr),
-  path(p)
-{
-  set_n_channels_from_format();
-}
-
-/**
- * Used by `Image::from_2d_array()` (<imgui-paint>)
- */
-Image::Image(int w, int h, int n, unsigned char* ptr, const std::string& p):
-  width(w),
-  height(h),
-  n_channels(n),
-  data(ptr),
-  path(p)
-{
-  set_format_from_n_channels();
-}
-
-void Image::free() const {
-  // glyph bitmap don't have a path (avoid double free, as freed auto by freetype)
-  if (!path.empty()) {
+void Image::free() {
+  // for glyph bitmap (avoid double free, as freed auto by freetype)
+  if (m_needs_free) {
     stbi_image_free(data);
+
+    // same image copy used on all six faces of Texture3D (avoids double free)
+    m_needs_free = false;
   }
 }
 
@@ -167,6 +172,6 @@ Image Image::from_2d_array(unsigned char** data_2d, int width, int height, int n
   }
 
   // construct image (path not null so data can be freed later)
-  Image image_out(width, height, n_channels, data_out, "From 2D array");
+  Image image_out(width, height, n_channels, data_out);
   return image_out;
 }
