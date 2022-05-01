@@ -1,5 +1,13 @@
 #include "texture.hpp"
 
+/**
+ * Default constructor: fields not init on purpose (to avoid that texture unit of default normal tex hides that of diffuse in `ModelRenderer`)
+ * also needed because lvalue in assignment `map[key] = value` (source: models/models.cpp) evals to a reference
+ * https://stackoverflow.com/a/29826440/2228912
+ */
+Texture::Texture()
+{}
+
 /* Used by children constructors to init this class's members */
 Texture::Texture(GLuint t, GLenum index, Wrapping wrapping):
   type(t),

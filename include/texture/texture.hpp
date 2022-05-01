@@ -13,6 +13,7 @@ struct Texture {
   GLuint id;
   GLuint type;
 
+  Texture();
   Texture(GLuint t, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   GLenum get_index() const;
   void attach();

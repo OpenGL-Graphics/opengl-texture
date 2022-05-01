@@ -1,15 +1,8 @@
 #include "texture_2d.hpp"
 
-/* Needed by `Mesh` as its textures not init. till `Model` in constructed */
-Texture2D::Texture2D():
-  Texture(GL_TEXTURE_2D)
-{}
-
 Texture2D::Texture2D(const Image& img, GLenum index, Wrapping wrapping):
   Texture(GL_TEXTURE_2D, index, wrapping)
 {
-  // default constructor needed because lvalue in assignment `map[key] = value` (source: models/models.cpp) evals to a reference
-  // https://stackoverflow.com/a/29826440/2228912
   generate();
   configure();
   set_image(img);

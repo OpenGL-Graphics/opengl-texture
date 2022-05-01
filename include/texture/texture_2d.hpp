@@ -15,7 +15,12 @@ struct Texture2D : Texture {
   int height;
   Image image;
 
-  Texture2D();
+  /**
+   * Inherit parent constructor:
+   * Needed by `Mesh` as its textures not init. till `Model` is constructed
+   */
+  using Texture::Texture;
+
   Texture2D(const Image& img, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   Texture2D(GLuint id_tex, GLenum index=GL_TEXTURE0);
   void free();
