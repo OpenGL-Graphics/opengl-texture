@@ -100,12 +100,9 @@ int Image::get_n_channels_from_format(GLenum f) {
 }
 
 void Image::free() {
-  // for glyph bitmap (avoid double free, as freed auto by freetype)
+  // doesn't run for glyph bitmap (avoid double free, as freed auto by freetype)
   if (m_needs_free) {
     stbi_image_free(data);
-
-    // same image copy used on all six faces of Texture3D (avoids double free)
-    m_needs_free = false;
   }
 }
 

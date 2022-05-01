@@ -14,22 +14,28 @@ void Texture3D::from_images() {
   // free images pointers
   for (Image& image : images) {
     image.free();
+
+    // free only first image when duplicated on 6 faces (avoids double-free)
+    if (m_is_same_image)
+      break;
   }
 }
 
 /**
  * Used to init all faces textures to same image
- * Constructor `std::vector(n, image)` creates copies of image,
- * i.e. changing `Image::m_needs_free` for one item, won't change it for others
+ * `std::vector` creates distinct image copies (copy by value) but with same data ptr
+ *   => free only once to avoid double-free
  */
 Texture3D::Texture3D(const Image& image, GLenum index, Wrapping wrapping):
-  Texture3D({ image, image, image, image, image, image }, index, wrapping)
+  Texture3D(std::vector<Image>(6, image), index, wrapping, true)
 {
 }
 
-Texture3D::Texture3D(const std::vector<Image>& imgs, GLenum index, Wrapping wrapping):
+/* Used also as a delegating constructor */
+Texture3D::Texture3D(const std::vector<Image>& imgs, GLenum index, Wrapping wrapping, bool is_same_image):
   images(imgs),
-  Texture(GL_TEXTURE_CUBE_MAP, index, wrapping)
+  Texture(GL_TEXTURE_CUBE_MAP, index, wrapping),
+  m_is_same_image(is_same_image)
 {
   generate();
   configure();

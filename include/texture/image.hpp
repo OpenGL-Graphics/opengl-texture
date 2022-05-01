@@ -27,7 +27,7 @@ struct Image {
   static Image from_2d_array(unsigned char** data_2d, int width, int height, int n_channels);
 
 private:
-  /* Avoids double-free for font bitmaps & for Texture3D with same image copy on 6 faces */
+  /* Avoids double-free for font bitmaps */
   bool m_needs_free;
 
   GLenum get_format_from_n_channels(int n);
