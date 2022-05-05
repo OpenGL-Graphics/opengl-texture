@@ -66,6 +66,13 @@ void Program::set_vec3(const std::string& name, const glm::vec3& vect) {
     glUniform3fv(uniform, 1, glm::value_ptr(vect));
 }
 
+/* For sending uv-texture coords */
+void Program::set_vec2(const std::string& name, const glm::vec2& vect) {
+  GLuint uniform = glGetUniformLocation(id, name.c_str());
+  if (uniform != -1)
+    glUniform2fv(uniform, 1, glm::value_ptr(vect));
+}
+
 void Program::set_bool(const std::string& name, bool value) {
   set_int(name, value);
 }
@@ -117,6 +124,8 @@ void Program::set_uniforms(const Uniforms& uniforms) {
       set_mat4(key_uniform, *ptr_value);
     } else if (auto ptr_value = std::get_if<glm::vec3>(&value_uniform)) {
       set_vec3(key_uniform, *ptr_value);
+    } else if (auto ptr_value = std::get_if<glm::vec2>(&value_uniform)) {
+      set_vec2(key_uniform, *ptr_value);
     } else if (auto ptr_value = std::get_if<bool>(&value_uniform)) {
       set_bool(key_uniform, *ptr_value);
     } else if (auto ptr_value = std::get_if<int>(&value_uniform)) {
