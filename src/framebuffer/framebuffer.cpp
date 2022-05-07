@@ -1,7 +1,13 @@
 #include "framebuffer.hpp"
+#include "framebuffer_exception.hpp"
 
-Framebuffer::Framebuffer() {
+Framebuffer::Framebuffer(const Texture2D& texture) {
   generate();
+  attach_texture(texture);
+
+  if (!is_complete()) {
+    throw FramebufferException();
+  }
 }
 
 void Framebuffer::generate() {

@@ -15,6 +15,11 @@ file(GLOB SRC
   "src/texture/*.cpp"
   "src/shader/*.cpp"
   "src/framebuffer/*.cpp"
+
+  "src/geometries/*.cpp"
+  "src/vertexes/*.cpp"
+  "src/math/*.cpp"
+  "src/render/*.cpp"
 )
 add_library(opengl_utils SHARED ${SRC})
 target_include_directories(opengl_utils PUBLIC

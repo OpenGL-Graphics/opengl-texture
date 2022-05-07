@@ -13,8 +13,7 @@ struct Framebuffer {
   int height;
   int n_channels;
 
-  Framebuffer();
-  void attach_texture(const Texture2D& texture);
+  Framebuffer(const Texture2D& texture);
   bool is_complete();
   void free();
   void bind();
@@ -27,6 +26,7 @@ private:
   GLenum m_format;
 
   void generate();
+  void attach_texture(const Texture2D& texture);
 };
 
 #endif
