@@ -1,18 +1,19 @@
 #include "texture_3d.hpp"
 
-void Texture3D::from_images() {
+void Texture3D::from_images(const std::vector<Image>& images) {
   bind();
 
   // 6-sided texture cube using given images
   for (size_t i_texture = 0; i_texture < images.size(); i_texture++) {
     Image image = images[i_texture];
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i_texture, 0, image.format, image.width, image.height, 0, image.format, GL_UNSIGNED_BYTE, image.data);
+    set_format(image.n_channels);
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i_texture, 0, format, image.width, image.height, 0, format, GL_UNSIGNED_BYTE, image.data);
   }
 
   unbind();
 
   // free images pointers
-  for (Image& image : images) {
+  for (const Image& image : images) {
     image.free();
 
     // free only first image when duplicated on 6 faces (avoids double-free)
@@ -32,14 +33,13 @@ Texture3D::Texture3D(const Image& image, GLenum index, Wrapping wrapping):
 }
 
 /* Used also as a delegating constructor */
-Texture3D::Texture3D(const std::vector<Image>& imgs, GLenum index, Wrapping wrapping, bool is_same_image):
-  images(imgs),
+Texture3D::Texture3D(const std::vector<Image>& images, GLenum index, Wrapping wrapping, bool is_same_image):
   Texture(GL_TEXTURE_CUBE_MAP, index, wrapping),
   m_is_same_image(is_same_image)
 {
   generate();
   configure();
-  from_images();
+  from_images(images);
 }
 
 void Texture3D::free() const {

@@ -40,8 +40,6 @@ Image::Image(const std::string& p, bool flip):
   if (data == nullptr) {
     throw ImageException();
   }
-
-  format = get_format_from_n_channels(n_channels);
 }
 
 /**
@@ -52,7 +50,6 @@ Image::Image(int w, int h, int n, unsigned char* ptr, bool needs_free):
   width(w),
   height(h),
   n_channels(n),
-  format(get_format_from_n_channels(n)),
   data(ptr),
   path(""),
   m_needs_free(needs_free)
@@ -64,42 +61,7 @@ void Image::save(const std::string& filename) {
   stbi_write_jpg(filename.c_str(), width, height, n_channels, data, 90);
 }
 
-/* Get image format from # of channels */
-GLenum Image::get_format_from_n_channels(int n) {
-  GLenum f;
-  switch (n_channels) {
-    case 1:
-      f = GL_RED;
-      break;
-    case 3:
-      f = GL_RGB;
-      break;
-    default:
-      f = GL_RGBA;
-  }
-
-  return f;
-}
-
-/* Get # of channels from image format */
-int Image::get_n_channels_from_format(GLenum f) {
-  int n;
-
-  switch (f) {
-    case GL_RED:
-      n = 1;
-      break;
-    case GL_RGB:
-      n = 3;
-      break;
-    default:
-      n = 4;
-  }
-
-  return n;
-}
-
-void Image::free() {
+void Image::free() const {
   // doesn't run for glyph bitmap (avoid double free, as freed auto by freetype)
   if (m_needs_free) {
     stbi_image_free(data);

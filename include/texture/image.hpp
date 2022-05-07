@@ -4,13 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "glad/glad.h"
-
 /* Wrapper around image pointer returned by `stbi_load()` */
 struct Image {
   int width;
   int height;
-  GLenum format;
   int n_channels;
   unsigned char* data;
   std::string path;
@@ -18,7 +15,7 @@ struct Image {
   Image();
   Image(const std::string& p, bool flip=true);
   Image(int w, int h, int n, unsigned char* ptr, bool needs_free=true);
-  void free();
+  void free() const;
 
   void save(const std::string& filename);
   std::vector<unsigned char> get_pixel_value(unsigned int i_pixel);
@@ -29,9 +26,6 @@ struct Image {
 private:
   /* Avoids double-free for font bitmaps */
   bool m_needs_free;
-
-  GLenum get_format_from_n_channels(int n);
-  int get_n_channels_from_format(GLenum f);
 };
 
 #endif // IMAGE_HPP

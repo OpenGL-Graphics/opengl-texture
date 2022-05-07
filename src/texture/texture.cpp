@@ -65,3 +65,35 @@ GLenum Texture::get_index() const {
   // used to pass texture index to shaders program
   return m_index - GL_TEXTURE0;
 }
+
+/* Get texture format from # of channels */
+void Texture::set_format(int n_channels) {
+  switch (n_channels) {
+    case 1:
+      format = GL_RED;
+      break;
+    case 3:
+      format = GL_RGB;
+      break;
+    default:
+      format = GL_RGBA;
+  }
+}
+
+/* Get # of channels from image format */
+int Texture::get_n_channels() const {
+  int n;
+
+  switch (format) {
+    case GL_RED:
+      n = 1;
+      break;
+    case GL_RGB:
+      n = 3;
+      break;
+    default:
+      n = 4;
+  }
+
+  return n;
+}

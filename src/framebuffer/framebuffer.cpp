@@ -14,8 +14,8 @@ void Framebuffer::attach_texture(const Texture2D& texture) {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture.type, texture.id, 0);
   width = texture.width;
   height = texture.height;
-  n_channels = texture.image.n_channels;
-  m_format = texture.image.format;
+  m_format = texture.format;
+  n_channels = texture.get_n_channels();
   unbind();
 }
 

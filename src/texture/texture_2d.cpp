@@ -19,16 +19,20 @@ Texture2D::Texture2D(GLuint id_tex, GLenum index):
 }
 
 /**
- * Retrieve image data from opengl texture (gpu -> cpu) & assign it to internal image
+ * Retrieve image data from opengl texture (gpu -> cpu)
  * Called before saving image the user painted on with nanovg in <imgui-paint>
  */
-void Texture2D::get_image() {
-  unsigned char* data = new unsigned char[width * height * image.n_channels];
-  glGetTexImage(type, 0, image.format, GL_UNSIGNED_BYTE, data);
+Image Texture2D::get_image() {
+  bind();
 
-  // free previous image & assign retrieved one
-  image.free();
-  image.data = data;
+  int n_channels = get_n_channels();
+  Image image(width, height, n_channels, nullptr);
+  image.data = new unsigned char[width * height * n_channels];
+  glGetTexImage(type, 0, format, GL_UNSIGNED_BYTE, image.data);
+
+  unbind();
+
+  return image;
 }
 
 /*
@@ -38,7 +42,7 @@ void Texture2D::get_image() {
 void Texture2D::set_subimage(const Image& subimage, const glm::uvec2& size, const glm::uvec2& offset) {
   // copy image subset to gpu (subimage pointer freed from calling code)
   bind();
-  glTexSubImage2D(GL_TEXTURE_2D, 0, offset.x, offset.y, size.x, size.y, subimage.format, GL_UNSIGNED_BYTE, subimage.data);
+  glTexSubImage2D(type, 0, offset.x, offset.y, size.x, size.y, format, GL_UNSIGNED_BYTE, subimage.data);
   unbind();
 }
 
@@ -46,15 +50,15 @@ void Texture2D::set_subimage(const Image& subimage, const glm::uvec2& size, cons
  * Set texture image
  * Used to update texture image from loaded path in `imgui-example` project
  */
-void Texture2D::set_image(const Image& img) {
+void Texture2D::set_image(const Image& image) {
   // 2d texture from given image (save width & height for HUD scaling)
-  image = img;
   width = image.width;
   height = image.height;
+  set_format(image.n_channels);
 
   // copy image to gpu (image pointer could be freed after `glTexImage2D`)
   bind();
-  glTexImage2D(GL_TEXTURE_2D, 0, image.format, width, height, 0, image.format, GL_UNSIGNED_BYTE, image.data);
+  glTexImage2D(type, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, image.data);
   unbind();
 
   // free image pointer

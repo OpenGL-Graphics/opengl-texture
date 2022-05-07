@@ -5,18 +5,19 @@
 #include <glm/glm.hpp>
 
 #include "glad/glad.h"
-#include "image.hpp"
 #include "wrapping.hpp"
 
 struct Texture {
   /* Needed in `Framebuffer` class */
   GLuint id;
   GLuint type;
+  GLenum format;
 
   Texture();
   Texture(GLuint t, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
   GLenum get_index() const;
   void attach();
+  int get_n_channels() const;
 
 protected:
   GLenum m_index;
@@ -28,6 +29,7 @@ protected:
   void configure();
   void bind();
   void unbind();
+  void set_format(int n_channels);
 };
 
 #endif // TEXTURE_HPP
