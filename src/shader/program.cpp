@@ -6,12 +6,6 @@
 #include "shader.hpp"
 #include "file.hpp"
 
-/* Used to construct a program from its `id` passed to callback in <imgui-example> project */
-Program::Program(GLuint id_pgm):
-  id(id_pgm)
-{
-}
-
 Program::Program(const std::string& path_vertex, const std::string& path_fragment) {
   // read shader source codes into strings (newer GLSL version not supported)
   std::string source_vertex = File::get_content(path_vertex);

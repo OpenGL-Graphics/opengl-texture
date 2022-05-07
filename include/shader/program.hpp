@@ -11,7 +11,6 @@
 struct Program {
   GLuint id;
 
-  Program(GLuint id_pgm);
   Program(const std::string& path_vertex, const std::string& path_fragment);
   void use();
   void unuse();

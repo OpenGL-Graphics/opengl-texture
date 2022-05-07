@@ -19,7 +19,6 @@ struct Texture2D : Texture {
   using Texture::Texture;
 
   Texture2D(const Image& img, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
-  Texture2D(GLuint id_tex, GLenum index=GL_TEXTURE0);
   void free();
 
   void set_image(const Image& image);

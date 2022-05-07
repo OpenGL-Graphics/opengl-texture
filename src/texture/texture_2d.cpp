@@ -9,16 +9,6 @@ Texture2D::Texture2D(const Image& img, GLenum index, Wrapping wrapping):
 }
 
 /**
- * Used to construct a texture from its `id` passed to callback in <imgui-example> project
- * `index` needed in `Program::set_uniforms()`
- */
-Texture2D::Texture2D(GLuint id_tex, GLenum index):
-  Texture(GL_TEXTURE_2D, index, Wrapping::BLACK)
-{
-  // empty as texture has already been defined & configured before callback is called
-}
-
-/**
  * Retrieve image data from opengl texture (gpu -> cpu)
  * Called before saving image the user painted on with nanovg in <imgui-paint>
  */

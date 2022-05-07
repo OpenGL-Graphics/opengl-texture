@@ -3,10 +3,10 @@
 
 #include "render/renderer.hpp"
 
-Renderer::Renderer(const Program& program, const VBO& vertex_buffer, const std::vector<Attribute>& attributes):
+Renderer::Renderer(const Program& pgm, const VBO& vertex_buffer, const std::vector<Attribute>& attributes):
   m_vao(),
   vbo(vertex_buffer),
-  m_program(program)
+  program(pgm)
 {
   // create vertex attributes linking bound VAO and VBO (& EBO with it)
   m_vao.bind();
@@ -48,16 +48,16 @@ void Renderer::draw(const Uniforms& u, GLenum mode, unsigned int count, size_t o
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   m_vao.bind();
-  m_program.use();
+  program.use();
 
   // pass shaders uniforms & draw attributes in bound VAO (using EBO vertexes indices)
   // offset given to `glDrawElements()` in bytes
-  m_program.set_uniforms(uniforms);
+  program.set_uniforms(uniforms);
   unsigned int n_elements = (count == 0) ? vbo.n_elements : count;
   glDrawElements(mode, n_elements, GL_UNSIGNED_INT, (GLvoid *) (offset * sizeof(GLuint)));
 
   m_vao.unbind();
-  m_program.unuse();
+  program.unuse();
 }
 
 /**
