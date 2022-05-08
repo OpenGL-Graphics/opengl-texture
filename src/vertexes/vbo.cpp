@@ -5,6 +5,7 @@
  * https://stackoverflow.com/a/15188950/2228912
  */
 VBO::VBO(const Geometry& geometry, bool is_empty, GLenum type):
+  // TODO: shouldn't we use std::move here to avoid double-allocation?
   m_type(type),
   m_vertexes(geometry.get_vertexes()),
   m_indices(geometry.get_indices()),
