@@ -5,13 +5,13 @@
  * https://stackoverflow.com/a/15188950/2228912
  */
 VBO::VBO(const Geometry& geometry, bool is_empty, GLenum type):
-  // TODO: shouldn't we use std::move here to avoid double-allocation?
+  // 07-01-23: use std::move to avoid copy of vector items (copy constructor)
   m_type(type),
-  m_vertexes(geometry.get_vertexes()),
-  m_indices(geometry.get_indices()),
+  m_vertexes(std::move(geometry.get_vertexes())),
+  m_indices(std::move(geometry.get_indices())),
+  positions(std::move(geometry.get_positions())),
 
-  n_elements(geometry.get_n_elements()),
-  positions(geometry.get_positions())
+  n_elements(geometry.get_n_elements())
 {
   generate();
   bind();
