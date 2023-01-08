@@ -3,9 +3,12 @@
 
 #include "render/renderer.hpp"
 
-Renderer::Renderer(const Program& pgm, const VBO& vertex_buffer, const std::vector<Attribute>& attributes):
+/**
+ * @param is_text Text has a dynamically-draw vbo
+ */
+Renderer::Renderer(const Program& pgm, const Geometry& geometry, const std::vector<Attribute>& attributes, bool is_text):
   m_vao(),
-  vbo(vertex_buffer),
+  vbo(geometry, is_text),
   program(pgm)
 {
   // create vertex attributes linking bound VAO and VBO (& EBO with it)

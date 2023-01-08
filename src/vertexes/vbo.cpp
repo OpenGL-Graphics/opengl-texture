@@ -3,26 +3,25 @@
 /**
  * No polymorphism if `geometry` wasn't passed by ref (or as a pointer)
  * https://stackoverflow.com/a/15188950/2228912
+ * 07-01-23: use std::move to avoid copy of vector items via copy constructor
+ * @param is_dynamic Only true for <fps>/TextRenderer (Same vbo for each glyph with updated geometry eachtime)
  */
-VBO::VBO(const Geometry& geometry, bool is_empty, GLenum type):
-  // 07-01-23: use std::move to avoid copy of vector items (copy constructor)
-  m_type(type),
-  m_vertexes(std::move(geometry.get_vertexes())),
-  m_indices(std::move(geometry.get_indices())),
+VBO::VBO(const Geometry& geometry, bool is_dynamic):
   positions(std::move(geometry.get_positions())),
-
   n_elements(geometry.get_n_elements())
 {
   generate();
   bind();
 
   // transfer geometry vertexes to bound VBO if not is_empty (else only reserve space)
-  const GLvoid* data = (!is_empty) ? m_vertexes.data() : NULL;
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_vertexes.size(), data, m_type);
+  std::vector<float> vertexes = std::move(geometry.get_vertexes());
+  GLenum type = is_dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexes.size(), vertexes.data(), type);
 
   // transfer vertexes indices if geometry has any
-  if (!m_indices.empty()) {
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_indices.size(), m_indices.data(), m_type);
+  std::vector<unsigned int> indices = std::move(geometry.get_indices());
+  if (!indices.empty()) {
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), type);
   }
 
   unbind();
@@ -33,12 +32,15 @@ void VBO::generate() {
   glGenBuffers(1, &m_id_ebo);
 }
 
-/* Update vbo with vertexes from geometery (used for rendering glyphs) */
+/**
+ * Update vbo with vertexes from geometery
+ * Used for rendering glyphs in <fps>`TextRenderer`
+ */
 void VBO::update(const Geometry& geometry) {
-  m_vertexes = geometry.get_vertexes();
+  std::vector<float> vertexes = std::move(geometry.get_vertexes());
   n_elements = geometry.get_n_elements();
   bind();
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * m_vertexes.size(), m_vertexes.data());
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * vertexes.size(), vertexes.data());
   unbind();
 }
 

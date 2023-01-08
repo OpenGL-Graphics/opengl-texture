@@ -17,7 +17,7 @@ struct Renderer {
   /* used to switch shaders in <imgui-paint> */
   Program program;
 
-  Renderer(const Program& pgm, const VBO& vertex_buffer, const std::vector<Attribute>& attributes);
+  Renderer(const Program& pgm, const Geometry& geometry, const std::vector<Attribute>& attributes, bool is_text=false);
   virtual void draw(const Uniforms& u={}, GLenum mode=GL_TRIANGLES, unsigned int count=0, size_t offset=0) final;
   void draw_with_outlines(const Uniforms& u);
   virtual void free() final;
