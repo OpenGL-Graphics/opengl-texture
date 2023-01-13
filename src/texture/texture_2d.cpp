@@ -54,10 +54,3 @@ void Texture2D::set_image(const Image& image) {
   // free image pointer
   image.free();
 }
-
-/**
- * Delete texture
- */
-void Texture2D::free() {
-  glDeleteTextures(1, &id);
-}

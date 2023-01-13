@@ -97,3 +97,10 @@ int Texture::get_n_channels() const {
 
   return n;
 }
+
+/**
+ * Delete texture
+ */
+void Texture::free() const {
+  glDeleteTextures(1, &id);
+}

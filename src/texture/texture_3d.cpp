@@ -41,7 +41,3 @@ Texture3D::Texture3D(const std::vector<Image>& images, GLenum index, Wrapping wr
   configure();
   from_images(images);
 }
-
-void Texture3D::free() const {
-  glDeleteTextures(1, &id);
-}
