@@ -34,7 +34,7 @@ Texture3D::Texture3D(const Image& image, GLenum index, Wrapping wrapping):
 
 /* Used also as a delegating constructor */
 Texture3D::Texture3D(const std::vector<Image>& images, GLenum index, Wrapping wrapping, bool is_same_image):
-  Texture(GL_TEXTURE_CUBE_MAP, index, wrapping),
+  Texture(GL_TEXTURE_CUBE_MAP, index, wrapping, images[0].path),
   m_is_same_image(is_same_image)
 {
   generate();

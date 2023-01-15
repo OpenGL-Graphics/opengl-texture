@@ -1,18 +1,24 @@
+#include <filesystem>
+
 #include "texture.hpp"
+
+namespace fs = std::filesystem;
 
 /**
  * Default constructor: fields not init on purpose (to avoid that texture unit of default normal tex hides that of diffuse in `ModelRenderer`)
  * also needed because lvalue in assignment `map[key] = value` (source: models/models.cpp) evals to a reference
  * https://stackoverflow.com/a/29826440/2228912
+ * Update 15-01-23: needed bcoz derived class Texture2D also has a default ctor
  */
 Texture::Texture()
 {}
 
 /* Used by children constructors to init this class's members */
-Texture::Texture(GLuint t, GLenum index, Wrapping wrapping):
+Texture::Texture(GLuint t, GLenum index, Wrapping wrapping, const std::string& path):
   type(t),
   m_index(index),
-  m_wrapping(wrapping)
+  m_wrapping(wrapping),
+  name(fs::path(path).stem())
 {
 }
 

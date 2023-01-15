@@ -2,6 +2,7 @@
 #define TEXTURE_HPP
 
 #include <vector>
+#include <string>
 #include <glm/glm.hpp>
 
 #include "glad/glad.h"
@@ -13,6 +14,9 @@ struct Texture {
   GLuint id;
   GLuint type;
   GLenum format;
+
+  /* useful to debug */
+  std::string name;
 
   GLenum get_index() const;
   void attach();
@@ -43,7 +47,7 @@ protected:
    * Default ctor mandatory for derived class Texture2D's default ctor
    */
   Texture();
-  Texture(GLuint t, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT);
+  Texture(GLuint t, GLenum index=GL_TEXTURE0, Wrapping wrapping=Wrapping::REPEAT, const std::string& path="");
 };
 
 #endif // TEXTURE_HPP

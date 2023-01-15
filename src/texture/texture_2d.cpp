@@ -1,7 +1,7 @@
 #include "texture_2d.hpp"
 
 Texture2D::Texture2D(const Image& img, GLenum index, Wrapping wrapping):
-  Texture(GL_TEXTURE_2D, index, wrapping)
+  Texture(GL_TEXTURE_2D, index, wrapping, img.path)
 {
   generate();
   configure();
