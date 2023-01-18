@@ -31,16 +31,39 @@ void Renderer::set_transform(const Transformation& t) {
   m_transformation = t;
 }
 
+void Renderer::bind() {
+  m_vao.bind();
+  program.use();
+}
+
+void Renderer::unbind() {
+  m_vao.unbind();
+  program.unuse();
+}
+
+void Renderer::draw(const Uniforms& u) {
+  _draw(u, GL_TRIANGLES, vbo.n_elements);
+}
+
+void Renderer::draw_plane(const Uniforms& u) {
+  _draw(u, GL_TRIANGLE_STRIP, vbo.n_elements);
+}
+
+void Renderer::draw_lines(const Uniforms& u, unsigned int count, size_t offset) {
+  unsigned int n_elements = (count == 0) ? vbo.n_elements : count;
+  _draw(u, GL_LINES, n_elements, offset);
+}
+
 /**
  * Draw vertexes given to `vbo`
  * @param Uniforms Unordered map (key, values) of vars to pass to shader
- *        Passed as const ref. as we cannot have default param values with refs.
+ *        Passed as const ref. cos non-const ref. not allowed to bind to temps (initializer_list)
  * @param mode GL_TRIANGLES for most meshes, GL_TRIANGLE_STRIP for grids (i.e. terrain & plane)
  *             GL_LINES to draw a line between each pair of successive vertexes
  * @param n_elements # of elements (i.e. indices) to draw (used only by `geometry/gizmo.cpp`)
  * @param offset Indice to start rendering from in EBO (used only by `geometry/gizmo.cpp`)
  */
-void Renderer::draw(const Uniforms& u, GLenum mode, unsigned int count, size_t offset) {
+void Renderer::_draw(const Uniforms& u, GLenum mode, unsigned int count, size_t offset) {
   // 3d position of model
   Uniforms uniforms = u;
   uniforms["model"] = m_transformation.model;
@@ -50,17 +73,15 @@ void Renderer::draw(const Uniforms& u, GLenum mode, unsigned int count, size_t o
   // wireframe mode
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  m_vao.bind();
-  program.use();
-
   // pass shaders uniforms & draw attributes in bound VAO (using EBO vertexes indices)
   // offset given to `glDrawElements()` in bytes
+  bind();
+
   program.set_uniforms(uniforms);
   unsigned int n_elements = (count == 0) ? vbo.n_elements : count;
   glDrawElements(mode, n_elements, GL_UNSIGNED_INT, (GLvoid *) (offset * sizeof(GLuint)));
 
-  m_vao.unbind();
-  program.unuse();
+  unbind();
 }
 
 /**
