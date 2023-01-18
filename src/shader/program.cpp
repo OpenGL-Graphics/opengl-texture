@@ -1,12 +1,22 @@
 #include <vector>
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
+#include <filesystem>
 
 #include "program.hpp"
 #include "shader.hpp"
 #include "file.hpp"
 
-Program::Program(const std::string& path_vertex, const std::string& path_fragment) {
+namespace fs = std::filesystem;
+
+Program::Program(const std::string& path_vertex, const std::string& path_fragment):
+  id(0)
+{
+  if (!fs::exists(path_vertex) || !fs::exists(path_fragment)) {
+    std::cout << "Vertex or fragment shader files don't exist" << '\n';
+    return;
+  }
+
   // read shader source codes into strings (newer GLSL version not supported)
   std::string source_vertex = File::get_content(path_vertex);
   std::string source_fragment = File::get_content(path_fragment);
@@ -17,7 +27,7 @@ Program::Program(const std::string& path_vertex, const std::string& path_fragmen
   GLuint vertex = shader_vertex.id;
   GLuint fragment = shader_fragment.id;
   if (vertex == 0 || fragment == 0) {
-    id = 0;
+    std::cout << "Failed to compile vertex or fragment shaders" << '\n';
     return;
   }
 
@@ -96,7 +106,7 @@ void Program::free() {
 }
 
 bool Program::has_failed() {
-  return (id == 0) ? true : false;
+  return id == 0;
 }
 
 /**

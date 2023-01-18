@@ -3,11 +3,13 @@
 
 #include "shader.hpp"
 
-Shader::Shader(const std::string& source, GLenum type) {
+Shader::Shader(const std::string& source, GLenum type):
+  id(0)
+{
   // The Cherno: https://www.youtube.com/watch?v=71BLZwRGUJE
   const char* source_shader_char = source.c_str();
 
-  // compile shader
+  // compile shader (glCreateShader() returns 0 on failure)
   m_type = type;
   id = glCreateShader(m_type);
   glShaderSource(id, 1, &source_shader_char, NULL);
@@ -25,7 +27,6 @@ Shader::Shader(const std::string& source, GLenum type) {
     std::cout << "Shader " << type_shader_str << ": " << message.data() << "\n";
 
     free();
-    id = 0;
   }
 }
 
