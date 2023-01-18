@@ -31,27 +31,19 @@ void Renderer::set_transform(const Transformation& t) {
   m_transformation = t;
 }
 
-void Renderer::bind() {
-  m_vao.bind();
-  program.use();
-}
-
-void Renderer::unbind() {
-  m_vao.unbind();
-  program.unuse();
-}
-
-void Renderer::draw(const Uniforms& u) {
-  _draw(u, GL_TRIANGLES, vbo.n_elements);
+/**
+ */
+void Renderer::draw(const Uniforms& u, GLsizei n_instances) {
+  _draw(u, GL_TRIANGLES, vbo.n_elements, n_instances);
 }
 
 void Renderer::draw_plane(const Uniforms& u) {
   _draw(u, GL_TRIANGLE_STRIP, vbo.n_elements);
 }
 
-void Renderer::draw_lines(const Uniforms& u, unsigned int count, size_t offset) {
-  unsigned int n_elements = (count == 0) ? vbo.n_elements : count;
-  _draw(u, GL_LINES, n_elements, offset);
+void Renderer::draw_lines(const Uniforms& u, unsigned int n_elements, size_t offset) {
+  unsigned int count = (n_elements == 0) ? vbo.n_elements : n_elements;
+  _draw(u, GL_LINES, count, 1, offset);
 }
 
 /**
@@ -62,8 +54,9 @@ void Renderer::draw_lines(const Uniforms& u, unsigned int count, size_t offset) 
  *             GL_LINES to draw a line between each pair of successive vertexes
  * @param n_elements # of elements (i.e. indices) to draw (used only by `geometry/gizmo.cpp`)
  * @param offset Indice to start rendering from in EBO (used only by `geometry/gizmo.cpp`)
+ * @param n_instances # of instances of same geometry rendered at once: https://learnopengl.com/Advanced-OpenGL/Instancing
  */
-void Renderer::_draw(const Uniforms& u, GLenum mode, unsigned int count, size_t offset) {
+void Renderer::_draw(const Uniforms& u, GLenum mode, unsigned int n_elements, GLsizei n_instances, size_t offset) {
   // 3d position of model
   Uniforms uniforms = u;
   uniforms["model"] = m_transformation.model;
@@ -75,13 +68,14 @@ void Renderer::_draw(const Uniforms& u, GLenum mode, unsigned int count, size_t 
 
   // pass shaders uniforms & draw attributes in bound VAO (using EBO vertexes indices)
   // offset given to `glDrawElements()` in bytes
-  bind();
+  m_vao.bind();
+  program.use();
 
   program.set_uniforms(uniforms);
-  unsigned int n_elements = (count == 0) ? vbo.n_elements : count;
-  glDrawElements(mode, n_elements, GL_UNSIGNED_INT, (GLvoid *) (offset * sizeof(GLuint)));
+  glDrawElementsInstanced(mode, n_elements, GL_UNSIGNED_INT, (GLvoid *) (offset * sizeof(GLuint)), n_instances);
 
-  unbind();
+  m_vao.unbind();
+  program.unuse();
 }
 
 /**
