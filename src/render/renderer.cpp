@@ -1,15 +1,19 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <sstream>
 
 #include "render/renderer.hpp"
+#include "uniforms.hpp"
 
 /**
  * @param is_text Text has a dynamically-draw vbo
+ * TODO: Program should be passed to Renderer::draw()
  */
 Renderer::Renderer(const Program& pgm, const Geometry& geometry, const std::vector<Attribute>& attributes, bool is_text):
   m_vao(),
   vbo(geometry, is_text),
-  program(pgm)
+  program(pgm),
+  m_n_instances(1)
 {
   // create vertex attributes linking bound VAO and VBO (& EBO with it)
   m_vao.bind();
@@ -24,17 +28,26 @@ Renderer::Renderer(const Program& pgm, const Geometry& geometry, const std::vect
 }
 
 /**
- * Sets initial transformation matrix for model (translation, rotation, scaling)
+ * Sets transformation matrix (translation, rotation, scaling) in uniforms
  * glm::mat4 used as certain objects in scene require a scaling (besides translation)
+ * Update 20-01-23: # of instances to draw determined from # of model matrices (i.e. positions)
  */
-void Renderer::set_transform(const Transformation& t) {
-  m_transformation = t;
+template <size_t N_INSTANCES>
+void Renderer::set_transform(const Transformation<N_INSTANCES>& transform) {
+  for (size_t i_instance = 0; i_instance < N_INSTANCES; ++i_instance) {
+    std::stringstream stream;
+    stream << "models[" << i_instance  << "]";
+    m_uniforms[stream.str()] = transform.models[i_instance];
+  }
+
+  m_uniforms["view"] = transform.view;
+  m_uniforms["projection"] = transform.projection;
+  m_n_instances = N_INSTANCES;
 }
 
-/**
- */
-void Renderer::draw(const Uniforms& u, GLsizei n_instances) {
-  _draw(u, GL_TRIANGLES, vbo.n_elements, n_instances);
+/* Different functions for every type of primitive (triangles, strips, lines) */
+void Renderer::draw(const Uniforms& u) {
+  _draw(u, GL_TRIANGLES, vbo.n_elements);
 }
 
 void Renderer::draw_plane(const Uniforms& u) {
@@ -43,7 +56,16 @@ void Renderer::draw_plane(const Uniforms& u) {
 
 void Renderer::draw_lines(const Uniforms& u, unsigned int n_elements, size_t offset) {
   unsigned int count = (n_elements == 0) ? vbo.n_elements : n_elements;
-  _draw(u, GL_LINES, count, 1, offset);
+  _draw(u, GL_LINES, count, offset);
+}
+
+/* Append to uniforms field member */
+void Renderer::set_uniforms(const Uniforms& u) {
+  for (const auto& item : u) {
+    KeyUniform key_uniform(item.first);
+    ValueUniform value_uniform(item.second);
+    m_uniforms[key_uniform] = value_uniform;
+  }
 }
 
 /**
@@ -54,14 +76,9 @@ void Renderer::draw_lines(const Uniforms& u, unsigned int n_elements, size_t off
  *             GL_LINES to draw a line between each pair of successive vertexes
  * @param n_elements # of elements (i.e. indices) to draw (used only by `geometry/gizmo.cpp`)
  * @param offset Indice to start rendering from in EBO (used only by `geometry/gizmo.cpp`)
- * @param n_instances # of instances of same geometry rendered at once: https://learnopengl.com/Advanced-OpenGL/Instancing
  */
-void Renderer::_draw(const Uniforms& u, GLenum mode, unsigned int n_elements, GLsizei n_instances, size_t offset) {
-  // 3d position of model
-  Uniforms uniforms = u;
-  uniforms["model"] = m_transformation.model;
-  uniforms["view"] = m_transformation.view;
-  uniforms["projection"] = m_transformation.projection;
+void Renderer::_draw(const Uniforms& u, GLenum mode, unsigned int n_elements, size_t offset) {
+  set_uniforms(u);
 
   // wireframe mode
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -71,8 +88,8 @@ void Renderer::_draw(const Uniforms& u, GLenum mode, unsigned int n_elements, GL
   m_vao.bind();
   program.use();
 
-  program.set_uniforms(uniforms);
-  glDrawElementsInstanced(mode, n_elements, GL_UNSIGNED_INT, (GLvoid *) (offset * sizeof(GLuint)), n_instances);
+  program.set_uniforms(m_uniforms);
+  glDrawElementsInstanced(mode, n_elements, GL_UNSIGNED_INT, (GLvoid *) (offset * sizeof(GLuint)), m_n_instances);
 
   m_vao.unbind();
   program.unuse();
@@ -89,17 +106,22 @@ void Renderer::draw_with_outlines(const Uniforms& u) {
   // 1st render pass: always pass the stencil test & set ref=1 in stencil buffer for drawn fragments (pixels)
   glStencilFunc(GL_ALWAYS, 1, 0xff);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-  Uniforms uniforms = u;
-  draw(uniforms);
+  draw(u);
+
+  // get transformation matrixes from uniforms
+  glm::mat4 model = std::get<glm::mat4>(m_uniforms["models[0]"]);
+  glm::mat4 view = std::get<glm::mat4>(m_uniforms["view"]);
+  glm::mat4 projection = std::get<glm::mat4>(m_uniforms["projection"]);
 
   // 2nd render pass: only fragments that weren't assigned 1s in previous step are rendered (pass the test)
   // white outlines & scaling
   glStencilFunc(GL_NOTEQUAL, 1, 0xff);
   set_transform({
-    glm::scale(m_transformation.model, glm::vec3(1.1f, 1.1f, 1.1f)),
-    m_transformation.view,
-    m_transformation.projection
+    { glm::scale(model, glm::vec3(1.1f, 1.1f, 1.1f)) },
+    view,
+    projection
   });
+  Uniforms uniforms = u;
   uniforms["color"] = glm::vec3(1.0f, 1.0f, 1.0f);
   draw(uniforms);
 
@@ -112,3 +134,7 @@ void Renderer::free() {
   m_vao.free();
   vbo.free();
 }
+
+// template instantiation to avoid linking error
+template void Renderer::set_transform<1>(const Transformation<1>& transform);
+template void Renderer::set_transform<2>(const Transformation<2>& transform);
