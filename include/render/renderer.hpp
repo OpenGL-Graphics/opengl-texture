@@ -28,6 +28,10 @@ struct Renderer {
   void draw_lines(const Uniforms& u, unsigned int n_elements=0, size_t offset=0);
   void draw_with_outlines(const Uniforms& u);
 
+  void set_uniforms(const Uniforms& u);
+
+  template <size_t N_INSTANCES = 1, typename T>
+  void set_uniform_arr(const std::string& name, const std::array<T, N_INSTANCES>& u);
 private:
   VAO m_vao;
   Uniforms m_uniforms;
@@ -36,7 +40,6 @@ private:
   GLsizei m_n_instances;
 
   void _draw(const Uniforms& u, GLenum mode, unsigned int n_elements=0, size_t offset=0);
-  void set_uniforms(const Uniforms& u);
 };
 
 #endif // RENDERER_HPP

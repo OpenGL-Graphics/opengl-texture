@@ -34,11 +34,14 @@ Renderer::Renderer(const Program& pgm, const Geometry& geometry, const std::vect
  */
 template <size_t N_INSTANCES>
 void Renderer::set_transform(const Transformation<N_INSTANCES>& transform) {
+  /*
   for (size_t i_instance = 0; i_instance < N_INSTANCES; ++i_instance) {
     std::stringstream stream;
     stream << "models[" << i_instance  << "]";
     m_uniforms[stream.str()] = transform.models[i_instance];
   }
+  */
+  set_uniform_arr("models", transform.models);
 
   m_uniforms["view"] = transform.view;
   m_uniforms["projection"] = transform.projection;
@@ -57,6 +60,16 @@ void Renderer::draw_plane(const Uniforms& u) {
 void Renderer::draw_lines(const Uniforms& u, unsigned int n_elements, size_t offset) {
   unsigned int count = (n_elements == 0) ? vbo.n_elements : n_elements;
   _draw(u, GL_LINES, count, offset);
+}
+
+/* TODO: move this method & next one to separate class */
+template <size_t N_INSTANCES, typename T>
+void Renderer::set_uniform_arr(const std::string& name, const std::array<T, N_INSTANCES>& u) {
+  for (size_t i_instance = 0; i_instance < N_INSTANCES; ++i_instance) {
+    std::stringstream stream;
+    stream << name << "[" << i_instance  << "]";
+    m_uniforms[stream.str()] = u[i_instance];
+  }
 }
 
 /* Append to uniforms field member */
@@ -122,7 +135,7 @@ void Renderer::draw_with_outlines(const Uniforms& u) {
     projection
   });
   Uniforms uniforms = u;
-  uniforms["color"] = glm::vec3(1.0f, 1.0f, 1.0f);
+  uniforms["colors[0]"] = glm::vec3(1.0f, 1.0f, 1.0f);
   draw(uniforms);
 
   // reset stencil test to always pass (for further rendering in same frame)
@@ -136,5 +149,9 @@ void Renderer::free() {
 }
 
 // template instantiation to avoid linking error
+// TODO: use boost preprocessing to loop over instantiations
 template void Renderer::set_transform<1>(const Transformation<1>& transform);
 template void Renderer::set_transform<2>(const Transformation<2>& transform);
+template void Renderer::set_transform<3>(const Transformation<3>& transform);
+
+template void Renderer::set_uniform_arr(const std::string& name, const std::array<glm::vec3, 3>& u);
