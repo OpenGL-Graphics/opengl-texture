@@ -13,7 +13,7 @@ Transformation<N_INSTANCES>::Transformation(const std::array<glm::mat4, N_INSTAN
 }
 
 // template instantiation to avoid linking error
-// TODO: use boost preprocessing to loop over instantiations
+// TODO: use boost preprocessing to loop over instantiations: https://stackoverflow.com/a/71885137/2228912
 template struct Transformation<1>;
 template struct Transformation<2>;
 template struct Transformation<3>;

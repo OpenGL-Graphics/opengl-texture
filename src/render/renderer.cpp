@@ -65,9 +65,23 @@ void Renderer::draw_lines(const Uniforms& u, unsigned int n_elements, size_t off
 /* TODO: move this method & next one to separate class */
 template <size_t N_INSTANCES, typename T>
 void Renderer::set_uniform_arr(const std::string& name, const std::array<T, N_INSTANCES>& u) {
+  // case of array of structs fields (see lights uniform in phong shader)
+  size_t i_dot = name.find(".");
+  bool is_struct_field = (i_dot != std::string::npos);
+
+  std::string field_name, struct_name;
+  if (is_struct_field) {
+    struct_name = name.substr(0, i_dot);
+    field_name = name.substr(i_dot + 1);
+  }
+
   for (size_t i_instance = 0; i_instance < N_INSTANCES; ++i_instance) {
     std::stringstream stream;
-    stream << name << "[" << i_instance  << "]";
+    if (!is_struct_field)
+      stream << name << "[" << i_instance  << "]";
+    else
+      stream << struct_name << "[" << i_instance  << "]." << field_name;
+
     m_uniforms[stream.str()] = u[i_instance];
   }
 }
@@ -149,9 +163,10 @@ void Renderer::free() {
 }
 
 // template instantiation to avoid linking error
-// TODO: use boost preprocessing to loop over instantiations
+// TODO: use boost preprocessing to loop over instantiations: https://stackoverflow.com/a/71885137/2228912
 template void Renderer::set_transform<1>(const Transformation<1>& transform);
 template void Renderer::set_transform<2>(const Transformation<2>& transform);
 template void Renderer::set_transform<3>(const Transformation<3>& transform);
 
+template void Renderer::set_uniform_arr(const std::string& name, const std::array<glm::vec3, 2>& u);
 template void Renderer::set_uniform_arr(const std::string& name, const std::array<glm::vec3, 3>& u);
