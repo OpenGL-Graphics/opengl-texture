@@ -5,7 +5,7 @@
 
 #include "program.hpp"
 #include "uniforms.hpp"
-#include "vertexes/attribute.hpp"
+#include "vertexes/attributes.hpp"
 #include "vertexes/vao.hpp"
 #include "vertexes/vbo.hpp"
 #include "math/transformation.hpp"

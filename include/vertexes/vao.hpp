@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <string>
 #include <vector>
-#include <vertexes/attribute.hpp>
+#include <vertexes/attributes.hpp>
 
 class VAO {
 public:
