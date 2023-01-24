@@ -1,3 +1,5 @@
+#include <boost/preprocessor/repetition/repeat_from_to.hpp>
+
 #include "math/transformation.hpp"
 
 /**
@@ -12,8 +14,7 @@ Transformation<N_INSTANCES>::Transformation(const std::array<glm::mat4, N_INSTAN
 {
 }
 
-// template instantiation to avoid linking error
-// TODO: use boost preprocessing to loop over instantiations: https://stackoverflow.com/a/71885137/2228912
-template struct Transformation<1>;
-template struct Transformation<2>;
-template struct Transformation<3>;
+// template instantiation using boost preprocessing (avoid linking error & repetition)
+// https://stackoverflow.com/a/7399473/2228912
+#define STRUCT(z, n, StructName) template struct StructName<n>;
+BOOST_PP_REPEAT_FROM_TO(1, 4, STRUCT, Transformation)

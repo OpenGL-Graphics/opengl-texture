@@ -13,6 +13,9 @@ Check this [tutorial][submodule-tutorial1] and this [tutorial][submodule-tutoria
 [submodule-tutorial1]: https://gist.github.com/gitaarik/8735255
 [submodule-tutorial2]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 
+# Prerequisite
+- **Boost** (for template instantiation loop): `pacman -Sy boost`
+
 # Repos depending on opengl-utils
 - [OpenGL-Graphics/first-person-shooter][fps]
 - [OpenGL-Graphics/imgui-paint][paint]
