@@ -20,8 +20,7 @@ struct Renderer {
   Renderer(const Program& pgm, const Geometry& geometry, const std::vector<Attribute>& attributes, bool is_text=false);
   virtual void free() final;
 
-  template <size_t N_INSTANCES = 1>
-  void set_transform(const Transformation<N_INSTANCES>& transform);
+  void set_transform(const Transformation& transform);
 
   void draw(const Uniforms& u);
   void draw_plane(const Uniforms& u);
@@ -30,8 +29,8 @@ struct Renderer {
 
   void set_uniforms(const Uniforms& u);
 
-  template <size_t N_INSTANCES = 1, typename T>
-  void set_uniform_arr(const std::string& name, const std::array<T, N_INSTANCES>& u);
+  template <typename T>
+  void set_uniform_arr(const std::string& name, const std::vector<T>& u);
 private:
   VAO m_vao;
   Uniforms m_uniforms;
