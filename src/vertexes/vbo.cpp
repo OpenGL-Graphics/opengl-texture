@@ -13,16 +13,15 @@ VBO::VBO(const Geometry& geometry, bool is_dynamic):
   generate();
   bind();
 
-  // transfer geometry vertexes to bound VBO if not is_empty (else only reserve space)
+  // transfer geometry vertexes to bound VBO (only reserve space for dynamic text glyphs)
   std::vector<float> vertexes = std::move(geometry.get_vertexes());
   GLenum type = is_dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexes.size(), vertexes.data(), type);
+  const GLvoid* data = is_dynamic ? NULL : vertexes.data();
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexes.size(), data, type);
 
   // transfer vertexes indices if geometry has any
   std::vector<unsigned int> indices = std::move(geometry.get_indices());
-  if (!indices.empty()) {
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), type);
-  }
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), type);
 
   unbind();
 }
@@ -33,7 +32,7 @@ void VBO::generate() {
 }
 
 /**
- * Update vbo with vertexes from geometery
+ * Update vbo with vertexes from geometery (indices already set in ctor)
  * Used for rendering glyphs in <fps>`TextRenderer`
  */
 void VBO::update(const Geometry& geometry) {
