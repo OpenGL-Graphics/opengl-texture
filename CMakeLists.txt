@@ -20,6 +20,7 @@ file(GLOB SRC
   "src/vertexes/*.cpp"
   "src/math/*.cpp"
   "src/render/*.cpp"
+  "src/navigation/*.cpp"
 )
 add_library(opengl_utils SHARED ${SRC})
 target_include_directories(opengl_utils PUBLIC
