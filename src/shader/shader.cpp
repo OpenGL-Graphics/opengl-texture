@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 
-#include "shader.hpp"
+#include "shader/shader.hpp"
 
 Shader::Shader(const std::string& source, GLenum type):
   id(0)

@@ -6,7 +6,7 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "uniforms.hpp"
+#include "shader/uniforms.hpp"
 
 struct Program {
   GLuint id;

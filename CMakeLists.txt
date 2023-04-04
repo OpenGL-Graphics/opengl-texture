@@ -23,9 +23,4 @@ file(GLOB SRC
   "src/navigation/*.cpp"
 )
 add_library(opengl_utils SHARED ${SRC})
-target_include_directories(opengl_utils PUBLIC
-  include
-  include/texture
-  include/shader
-  include/framebuffer
-)
+target_include_directories(opengl_utils PUBLIC include)

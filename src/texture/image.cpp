@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstring>
 
-#include "image.hpp"
-#include "image_exception.hpp"
+#include "texture/image.hpp"
+#include "texture/image_exception.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"

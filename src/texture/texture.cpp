@@ -1,6 +1,6 @@
 #include <filesystem>
 
-#include "texture.hpp"
+#include "texture/texture.hpp"
 
 namespace fs = std::filesystem;
 

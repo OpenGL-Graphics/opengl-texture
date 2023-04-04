@@ -1,7 +1,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "file.hpp"
+#include "shader/file.hpp"
 
 /**
  * Get file content.

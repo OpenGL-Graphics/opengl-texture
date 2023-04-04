@@ -1,4 +1,4 @@
-#include "framebuffer_exception.hpp"
+#include "framebuffer/framebuffer_exception.hpp"
 
 FramebufferException::FramebufferException():
   m_message("Framebuffer not complete")

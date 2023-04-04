@@ -3,8 +3,8 @@
 #include <sstream>
 
 #include "render/renderer.hpp"
-#include "texture_2d.hpp"
-#include "uniforms.hpp"
+#include "texture/texture_2d.hpp"
+#include "shader/uniforms.hpp"
 
 /**
  * @param is_text Text has a dynamically-draw vbo

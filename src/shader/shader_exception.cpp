@@ -1,4 +1,4 @@
-#include "shader_exception.hpp"
+#include "shader/shader_exception.hpp"
 
 ShaderException::ShaderException():
   m_message("Vertex or fragment shaders failed to compile")

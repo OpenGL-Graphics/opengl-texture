@@ -1,5 +1,5 @@
-#include "framebuffer.hpp"
-#include "framebuffer_exception.hpp"
+#include "framebuffer/framebuffer.hpp"
+#include "framebuffer/framebuffer_exception.hpp"
 
 Framebuffer::Framebuffer() {
   generate();

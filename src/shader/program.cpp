@@ -3,9 +3,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <filesystem>
 
-#include "program.hpp"
-#include "shader.hpp"
-#include "file.hpp"
+#include "shader/program.hpp"
+#include "shader/shader.hpp"
+#include "shader/file.hpp"
 
 namespace fs = std::filesystem;
 

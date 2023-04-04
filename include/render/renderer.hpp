@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "program.hpp"
-#include "uniforms.hpp"
+#include "shader/program.hpp"
+#include "shader/uniforms.hpp"
 #include "vertexes/attributes.hpp"
 #include "vertexes/vao.hpp"
 #include "vertexes/vbo.hpp"

@@ -6,8 +6,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "texture_2d.hpp"
-#include "texture_3d.hpp"
+#include "texture/texture_2d.hpp"
+#include "texture/texture_3d.hpp"
 
 // dictionary type for heteregenous uniform values
 using KeyUniform = std::string;

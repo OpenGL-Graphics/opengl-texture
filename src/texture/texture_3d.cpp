@@ -1,4 +1,4 @@
-#include "texture_3d.hpp"
+#include "texture/texture_3d.hpp"
 
 void Texture3D::from_images(const std::vector<Image>& images) {
   bind();
