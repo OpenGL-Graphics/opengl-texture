@@ -4,7 +4,9 @@
 
 #include "render/renderer.hpp"
 #include "texture/texture_2d.hpp"
+
 #include "shader/uniforms.hpp"
+#include "shader/uniforms_manager.hpp"
 
 /**
  * @param is_text Text has a dynamically-draw vbo
@@ -55,37 +57,10 @@ void Renderer::draw_lines(const Uniforms& u, unsigned int n_elements, size_t off
   _draw(u, GL_LINES, count, offset);
 }
 
-/* TODO: move this method & next one to separate class */
+/* Used for assigning uniforms to each instanced object */
 template <typename T>
 void Renderer::set_uniform_arr(const std::string& name, const std::vector<T>& u) {
-  // case of array of structs fields (see lights uniform in phong shader)
-  size_t i_dot = name.find(".");
-  bool is_struct_field = (i_dot != std::string::npos);
-
-  std::string field_name, struct_name;
-  if (is_struct_field) {
-    struct_name = name.substr(0, i_dot);
-    field_name = name.substr(i_dot + 1);
-  }
-
-  for (size_t i_instance = 0; i_instance < m_n_instances; ++i_instance) {
-    std::stringstream stream;
-    if (!is_struct_field)
-      stream << name << "[" << i_instance  << "]";
-    else
-      stream << struct_name << "[" << i_instance  << "]." << field_name;
-
-    m_uniforms[stream.str()] = u[i_instance];
-  }
-}
-
-/* Append to uniforms field member */
-void Renderer::set_uniforms(const Uniforms& u) {
-  for (const auto& item : u) {
-    KeyUniform key_uniform(item.first);
-    ValueUniform value_uniform(item.second);
-    m_uniforms[key_uniform] = value_uniform;
-  }
+  UniformsManager::set_arr(m_uniforms, name, u);
 }
 
 /**
@@ -98,7 +73,7 @@ void Renderer::set_uniforms(const Uniforms& u) {
  * @param offset Indice to start rendering from in EBO (used only by `geometry/gizmo.cpp`)
  */
 void Renderer::_draw(const Uniforms& u, GLenum mode, unsigned int n_elements, size_t offset) {
-  set_uniforms(u);
+  UniformsManager::copy(m_uniforms, u);
 
   // wireframe mode
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -156,6 +131,6 @@ void Renderer::free() {
 }
 
 // template instantiation (avoids linking error)
-// set_uniform_arr<glm::mat4>() probably instantiated by Renderer::set_transform()
 template void Renderer::set_uniform_arr(const std::string&, const std::vector<glm::vec3>&);
+template void Renderer::set_uniform_arr(const std::string&, const std::vector<glm::mat4>&);
 template void Renderer::set_uniform_arr(const std::string&, const std::vector<Texture2D>&);

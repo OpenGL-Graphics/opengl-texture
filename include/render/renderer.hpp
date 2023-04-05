@@ -5,9 +5,11 @@
 
 #include "shader/program.hpp"
 #include "shader/uniforms.hpp"
+
 #include "vertexes/attributes.hpp"
 #include "vertexes/vao.hpp"
 #include "vertexes/vbo.hpp"
+
 #include "math/transformation.hpp"
 
 struct Renderer {
@@ -26,8 +28,6 @@ struct Renderer {
   void draw_plane(const Uniforms& u);
   void draw_lines(const Uniforms& u, unsigned int n_elements=0, size_t offset=0);
   void draw_with_outlines(const Uniforms& u);
-
-  void set_uniforms(const Uniforms& u);
 
   template <typename T>
   void set_uniform_arr(const std::string& name, const std::vector<T>& u);
