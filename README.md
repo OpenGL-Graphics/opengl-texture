@@ -19,6 +19,8 @@ Check this [tutorial][submodule-tutorial1] and this [tutorial][submodule-tutoria
 # Repos depending on opengl-utils
 - [OpenGL-Graphics/first-person-shooter][fps]
 - [OpenGL-Graphics/imgui-paint][paint]
+- [OpenGL-Graphics/terrain][terrain]
 
 [fps]: https://github.com/OpenGL-Graphics/first-person-shooter
 [paint]: https://github.com/OpenGL-Graphics/imgui-paint
+[terrain]: https://github.com/OpenGL-Graphics/terrain
