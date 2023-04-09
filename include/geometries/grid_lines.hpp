@@ -11,10 +11,10 @@
 namespace geometry {
   class GridLines : public Geometry {
   public:
-    GridLines();
+    GridLines(unsigned int n_lines);
 
   private:
-    static const int N_LINES = 35;
+    unsigned int m_n_lines;
 
     void set_vertexes();
     void set_indices();
